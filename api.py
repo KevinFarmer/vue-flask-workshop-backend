@@ -69,7 +69,6 @@ class EventsForUser(Resource):
             for row in data:
                 data_json.append({'user': row[0], 'name': row[1], 'description': row[2], 'date': row[3]})
 
-            conn.close()
             ret_data = json.dumps(data_json)
 
             conn.close()
