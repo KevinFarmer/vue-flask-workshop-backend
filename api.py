@@ -64,12 +64,13 @@ class EventsForUser(Resource):
             cursor.execute("""SELECT * from users where username=%s""", (user,))
             conn.commit()
             data = cursor.fetchall()
-            ret_data = "["
-            for row in data:
-                ret_data += """{'user': '%s', 'name': '%s', 'description': '%s', 'date': '%s'}, """ % (row[0], row[1], row[2], row[3])
 
-            ret_data = ret_data[:-2]
-            ret_data += "]"
+            data_json = []
+            for row in data:
+                data_json.append({'user': row[0], 'name': row[1], 'description': row[2], 'date': row[3]})
+
+            conn.close()
+            ret_data = json.dumps(data_json)
 
             conn.close()
 
@@ -88,14 +89,13 @@ class AllEvents(Resource):
             query = """SELECT * FROM users"""
             cursor.execute(query)
             data = cursor.fetchall()
-            ret_data = "["
-            for row in data:
-                ret_data += """{'user': '%s', 'name': '%s', 'description': '%s', 'date': '%s'}, """ % (row[0], row[1], row[2], row[3])
 
-            ret_data = ret_data[:-2]
-            ret_data += "]"
+            data_json = []
+            for row in data:
+                data_json.append({'user': row[0], 'name': row[1], 'description': row[2], 'date': row[3]})
 
             conn.close()
+            ret_data = json.dumps(data_json)
 
             return ret_data
 
@@ -121,7 +121,8 @@ class DeleteEvent(Resource):
             conn = mysql.connect()
             cursor = conn.cursor()
 
-            query = """DELETE FROM users WHERE username="%s" and postname="%s" and postdate="%s" and detail="%s" """ % (user, name, description, date)
+            query = """DELETE FROM users WHERE username=%s and postname=%s and postdate=%s and detail=%s """ % (json.dumps(user), json.dumps(name), json.dumps(description), json.dumps(date))
+
             cursor.execute(query)
             conn.commit()
 
